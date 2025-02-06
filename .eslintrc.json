@@ -1,0 +1,22 @@
+{
+  "extends": ["eslint:recommended", "plugin:prettier/recommended"],
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": false
+    }
+  },
+  "rules": {
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-floating-promises": "warn",
+    "@typescript-eslint/no-unsafe-argument": "warn",
+    "prettier/prettier": [
+      "error",
+      {
+        "endOfLine": "lf",
+        "bracketSpacing": true
+      }
+    ]
+  }
+}
