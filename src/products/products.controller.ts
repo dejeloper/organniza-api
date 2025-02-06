@@ -13,7 +13,7 @@ import {
 import {ProductsService} from './products.service';
 import {CreateProductDto} from './dto/create-product.dto';
 import {UpdateProductDto} from './dto/update-product.dto';
-import {ApiOperation, ApiTags} from '@nestjs/swagger';
+import {ApiOperation, ApiResponse, ApiTags} from '@nestjs/swagger';
 
 @ApiTags('Productos')
 @Controller('products')
@@ -22,6 +22,7 @@ export class ProductsController {
 
   @Post()
   @ApiOperation({summary: 'Crear producto'})
+  @ApiResponse({status: 201, description: 'Producto creado correctamente'})
   // @UsePipes(new ValidationPipe({transform: true}))
   async create(@Body() createProductDto: CreateProductDto, @Res() res: Response) {
     try {
@@ -52,6 +53,7 @@ export class ProductsController {
 
   @Get()
   @ApiOperation({summary: 'Listar productos'})
+  @ApiResponse({status: 200, description: 'Productos obtenidos correctamente'})
   async findAll(@Res() res: Response) {
     try {
       const productos = await this.productsService.findAll();
@@ -86,6 +88,7 @@ export class ProductsController {
 
   @Get(':id')
   @ApiOperation({summary: 'Obtener producto'})
+  @ApiResponse({status: 200, description: 'Producto obtenido correctamente'})
   async findOne(@Param('id') id: string, @Res() res: Response) {
     try {
       const producto = await this.productsService.findOne(+id);
@@ -120,6 +123,7 @@ export class ProductsController {
 
   @Patch(':id')
   @ApiOperation({summary: 'Actualizar producto'})
+  @ApiResponse({status: 200, description: 'Producto actualizado correctamente'})
   async update(
     @Param('id') id: string,
     @Body() updateProductDto: UpdateProductDto,
@@ -158,6 +162,7 @@ export class ProductsController {
 
   @Delete(':id')
   @ApiOperation({summary: 'Eliminar producto'})
+  @ApiResponse({status: 200, description: 'Producto eliminado correctamente'})
   async remove(@Param('id') id: string, @Res() res: Response) {
     try {
       const product = await this.productsService.remove(+id);
