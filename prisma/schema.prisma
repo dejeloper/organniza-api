@@ -11,13 +11,12 @@ datasource db {
 }
 
 model Product {
-  id            Int       @id @default(autoincrement())
-  name          String    @unique
+  id            Int      @id @default(autoincrement())
+  name          String
   price         Float
-  category      String?
-  clasification String?
-  enabled       Boolean   @default(true)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  deletedAt     DateTime?
+  category      String
+  clasification String
+  enabled       Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
