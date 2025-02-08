@@ -17,7 +17,7 @@ export class ProductsService {
       });
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === 'P2002' || error.code === 'P2003') {
+        if (error.code === 'P2000' || error.code === 'P2002' || error.code === 'P2003') {
           const errorMessage = "Ya existe un producto con el mismo nombre";
           return {message: `No se pudo crear el producto. ${errorMessage}`};
         }
@@ -29,7 +29,16 @@ export class ProductsService {
 
   async findAll(): Promise<{message: string} | Product[]> {
     try {
-      return await this.prismaService.product.findMany({orderBy: {id: 'asc'}});
+      const product = await this.prismaService.product.findMany({
+        where: {enabled: true},
+        orderBy: {id: 'asc'}
+      });
+
+      if (!product || product.length === 0) {
+        return {message: `No se encontraron productos`};
+      }
+
+      return product;
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2016' || error.code === 'P2025') {
@@ -81,7 +90,7 @@ export class ProductsService {
 
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === 'P2002' || error.code === 'P2003' || error.code === 'P2025') {
+        if (error.code === 'P2000' || error.code === 'P2002' || error.code === 'P2003' || error.code === 'P2025') {
           const errorMessage = error.meta?.cause || ""
           return {message: `No se pudo actualizar el producto. ${errorMessage}`};
         }
@@ -93,33 +102,24 @@ export class ProductsService {
 
   async remove(id: number) {
     try {
-      const productDeleted = await this.prismaService.product.findUnique({
-        where: {id, enabled: true},
+      const deleteProduct = await this.prismaService.product.delete({
+        where: {id},
       });
 
-      if (!productDeleted) {
+
+      if (!deleteProduct) {
         return {message: `No se encontró producto con id ${id}`};
       }
 
-      const deleted = await this.prismaService.product.update({
-        where: {id},
-        data: {
-          deletedAt: new Date(),
-          enabled: false
-        },
-      });
-      console.log(deleted)
-      return deleted;
+      return deleteProduct;
 
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === 'P2002' || error.code === 'P2003' || error.code === 'P2025' || error.code === 'P2014') {
+        if (error.code === 'P2002' || error.code === 'P2003' || error.code === 'P2025') {
           const errorMessage = error.meta?.cause || ""
-          return {message: `No se pudo eliminar el producto. ${errorMessage}`};
+          return {message: `No se pudo actualizar el producto. ${errorMessage}`};
         }
       }
-
-      return {message: `Error al eliminar el producto: ${error.message}`};
     }
   }
 }
