@@ -2,7 +2,7 @@ import {Injectable, NotFoundException, BadRequestException, InternalServerErrorE
 import {CreateProductDto} from './dto/create-product.dto';
 import {UpdateProductDto} from './dto/update-product.dto';
 import {PrismaService} from 'src/prisma/prisma.service';
-import {Prisma, Product} from '@prisma/client';
+import {Product} from '@prisma/client';
 
 @Injectable()
 export class ProductsService {
@@ -12,9 +12,6 @@ export class ProductsService {
     try {
       return await this.prismaService.product.create({data: createProductDto});
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
-        throw new BadRequestException('Ya existe un producto con el mismo nombre');
-      }
       throw new InternalServerErrorException(`Error al crear el producto: ${error.message}`);
     }
   }
@@ -48,9 +45,6 @@ export class ProductsService {
     try {
       return await this.prismaService.product.update({where: {id}, data: updateProductDto});
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
-        throw new NotFoundException(`No se encontró producto con id ${id}`);
-      }
       throw new InternalServerErrorException(`Error al actualizar el producto: ${error.message}`);
     }
   }
@@ -63,9 +57,6 @@ export class ProductsService {
       });
       return product;
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
-        throw new NotFoundException(`No se encontró producto con id ${id}`);
-      }
       throw new InternalServerErrorException(`Error al eliminar el producto: ${error.message}`);
     }
   }
