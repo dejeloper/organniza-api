@@ -12,10 +12,8 @@ export class ProductsService {
     try {
       return await this.prismaService.product.create({data: createProductDto});
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === 'P2002') {
-          throw new BadRequestException('Ya existe un producto con el mismo nombre');
-        }
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+        throw new BadRequestException('Ya existe un producto con el mismo nombre');
       }
       throw new InternalServerErrorException(`Error al crear el producto: ${error.message}`);
     }
@@ -34,7 +32,9 @@ export class ProductsService {
 
   async findOne(id: number): Promise<Product> {
     try {
-      const product = await this.prismaService.product.findUnique({where: {id}});
+      const product = await this.prismaService.product.findUnique({
+        where: {id, enabled: true},
+      });
       if (!product) {
         throw new NotFoundException(`No se encontró producto con id ${id}`);
       }
@@ -46,13 +46,10 @@ export class ProductsService {
 
   async update(id: number, updateProductDto: UpdateProductDto): Promise<Product> {
     try {
-      await this.findOne(id);
       return await this.prismaService.product.update({where: {id}, data: updateProductDto});
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === 'P2025') {
-          throw new NotFoundException(`No se encontró producto con id ${id}`);
-        }
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+        throw new NotFoundException(`No se encontró producto con id ${id}`);
       }
       throw new InternalServerErrorException(`Error al actualizar el producto: ${error.message}`);
     }
@@ -60,12 +57,14 @@ export class ProductsService {
 
   async remove(id: number): Promise<Product> {
     try {
-      return await this.prismaService.product.delete({where: {id}});
+      const product = await this.prismaService.product.update({
+        where: {id},
+        data: {enabled: false},
+      });
+      return product;
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === 'P2025') {
-          throw new NotFoundException(`No se encontró producto con id ${id}`);
-        }
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+        throw new NotFoundException(`No se encontró producto con id ${id}`);
       }
       throw new InternalServerErrorException(`Error al eliminar el producto: ${error.message}`);
     }
