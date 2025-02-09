@@ -3,6 +3,7 @@ import {ExpressAdapter} from '@nestjs/platform-express';
 import {AppModule} from './app.module';
 import {DocumentBuilder, SwaggerModule} from '@nestjs/swagger';
 import express, {Express} from 'express';
+
 const server: Express = express();
 
 async function bootstrap() {
@@ -21,15 +22,9 @@ async function bootstrap() {
 
   await app.init();
 
-  if (!process.env.VERCEL) {
-    const PORT = process.env.PORT || 5000;
-    await app.listen(PORT);
-    console.log(`🚀 Servidor corriendo en http://localhost:${PORT}/api`);
-  }
+  await app.listen(process.env.PORT || 5000);
 }
 
-if (!process.env.VERCEL) {
-  bootstrap();
-}
+bootstrap();
 
-export default server;  
+export default server;
