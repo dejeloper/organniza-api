@@ -11,8 +11,6 @@ async function bootstrap() {
   app.enableCors();
   app.setGlobalPrefix('api');
 
-  await app.init();
-
   const config = new DocumentBuilder()
     .setTitle('Organniza API')
     .setDescription('API para el proyecto Organniza')
@@ -22,10 +20,9 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/swagger', app, document);
 
-  const PORT = process.env.PORT || 5000;
-  server.listen(PORT, () => {
-    console.log(`🚀 Servidor corriendo en http://localhost:${PORT}/api/swagger`);
-  });
+  await app.init();
+
+  await app.listen(process.env.PORT || 5000);
 }
 
 bootstrap();
