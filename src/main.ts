@@ -2,7 +2,7 @@ import {NestFactory} from '@nestjs/core';
 import {ExpressAdapter} from '@nestjs/platform-express';
 import {AppModule} from './app.module';
 import {DocumentBuilder, SwaggerModule} from '@nestjs/swagger';
-import express, {Express} from 'express'; // 🔹 Importamos `Express`
+import express, {Express} from 'express';
 
 const server: Express = express();
 
@@ -11,7 +11,6 @@ async function bootstrap() {
   app.enableCors();
   app.setGlobalPrefix('api');
 
-  await app.init();
   const config = new DocumentBuilder()
     .setTitle('Organniza API')
     .setDescription('API para el proyecto Organniza')
@@ -21,10 +20,9 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/swagger', app, document);
 
-  const PORT = process.env.PORT || 5000;
-  await app.listen(PORT);
+  await app.init();
 
-  console.log(`🚀 Swagger disponible en: http://localhost:${PORT}/api/swagger`);
+  await app.listen(process.env.PORT || 5000);
 }
 
 bootstrap();
