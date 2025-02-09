@@ -20,34 +20,39 @@ import {ApiOperation, ApiResponse, ApiTags} from '@nestjs/swagger';
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) { }
 
+  private handleServiceResponse(res: Response, result: any, successMessage: string) {
+    if (typeof result === 'object' && 'message' in result) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        status: false,
+        message: result.message || 'Error en la operación',
+        response: null,
+      });
+    }
+
+    return res.status(HttpStatus.OK).json({
+      status: true,
+      message: successMessage,
+      response: result,
+    });
+  }
+
+  private handleErrorResponse(res: Response, error: any, action: string) {
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+      status: false,
+      message: `Error al ${action}: ${error.message}`,
+      response: null,
+    });
+  }
+
   @Post()
   @ApiOperation({summary: 'Crear producto'})
   @ApiResponse({status: 201, description: 'Producto creado correctamente'})
-  // @UsePipes(new ValidationPipe({transform: true}))
   async create(@Body() createProductDto: CreateProductDto, @Res() res: Response) {
     try {
       const product = await this.productsService.create(createProductDto);
-
-      if (typeof product === 'object' && 'message' in product) {
-        return res.status(HttpStatus.BAD_REQUEST).json({
-          status: false,
-          message: product.message || 'Error al crear el producto',
-          response: null,
-        });
-      }
-
-      return res.status(HttpStatus.CREATED).json({
-        status: true,
-        message: 'Producto creado correctamente',
-        response: product,
-      });
-
+      return this.handleServiceResponse(res, product, 'Producto creado correctamente');
     } catch (error) {
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        status: false,
-        message: `Error al crear el producto: ${error}`,
-        response: null,
-      });
+      return this.handleErrorResponse(res, error, 'crear el producto');
     }
   }
 
@@ -59,30 +64,16 @@ export class ProductsController {
       const productos = await this.productsService.findAll();
 
       if (Array.isArray(productos) && productos.length === 0) {
-        return {
+        return res.status(HttpStatus.NOT_FOUND).json({
           status: false,
           message: 'No se encontraron productos',
-          response: null,
-        };
-      } else if (typeof productos === 'object' && 'message' in productos) {
-        return res.status(HttpStatus.BAD_REQUEST).json({
-          status: false,
-          message: productos.message || 'Error al obtener los productos',
           response: null,
         });
       }
 
-      return res.status(HttpStatus.OK).json({
-        status: true,
-        message: 'Productos obtenidos correctamente',
-        response: productos,
-      });
+      return this.handleServiceResponse(res, productos, 'Productos obtenidos correctamente');
     } catch (error) {
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        status: false,
-        message: `Error al obtener los productos: ${error}`,
-        response: null,
-      });
+      return this.handleErrorResponse(res, error, 'obtener los productos');
     }
   }
 
@@ -99,36 +90,18 @@ export class ProductsController {
           message: 'No se encontró el producto',
           response: null,
         });
-      } else if (typeof producto === 'object' && 'message' in producto) {
-        return res.status(HttpStatus.BAD_REQUEST).json({
-          status: false,
-          message: producto.message || 'Error al obtener el producto',
-          response: null,
-        });
       }
 
-      return res.status(HttpStatus.OK).json({
-        status: true,
-        message: 'Producto obtenido correctamente',
-        response: producto,
-      });
+      return this.handleServiceResponse(res, producto, 'Producto obtenido correctamente');
     } catch (error) {
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        status: false,
-        message: `Error al obtener el producto: ${error}`,
-        response: null,
-      });
+      return this.handleErrorResponse(res, error, 'obtener el producto');
     }
   }
 
   @Patch(':id')
   @ApiOperation({summary: 'Actualizar producto'})
   @ApiResponse({status: 200, description: 'Producto actualizado correctamente'})
-  async update(
-    @Param('id') id: string,
-    @Body() updateProductDto: UpdateProductDto,
-    @Res() res: Response
-  ) {
+  async update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto, @Res() res: Response) {
     try {
       const product = await this.productsService.update(+id, updateProductDto);
 
@@ -138,25 +111,11 @@ export class ProductsController {
           message: 'No se encontró el producto',
           response: null,
         });
-      } else if (typeof product === 'object' && 'message' in product) {
-        return res.status(HttpStatus.BAD_REQUEST).json({
-          status: false,
-          message: product.message || 'Error al actualizar el producto',
-          response: null,
-        });
       }
 
-      return res.status(HttpStatus.OK).json({
-        status: true,
-        message: 'Producto actualizado correctamente',
-        response: product,
-      });
+      return this.handleServiceResponse(res, product, 'Producto actualizado correctamente');
     } catch (error) {
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        status: false,
-        message: `Error al actualizar el producto: ${error}`,
-        response: null,
-      });
+      return this.handleErrorResponse(res, error, 'actualizar el producto');
     }
   }
 
@@ -173,27 +132,11 @@ export class ProductsController {
           message: 'No se encontró el producto',
           response: null,
         });
-      } else if (typeof product === 'object' && 'message' in product) {
-        return res.status(HttpStatus.BAD_REQUEST).json({
-          status: false,
-          message: product.message || 'Error al eliminar el producto',
-          response: null,
-        });
       }
 
-      return res.status(HttpStatus.OK).json({
-        status: true,
-        message: 'Producto eliminado correctamente',
-        response: product,
-      });
+      return this.handleServiceResponse(res, product, 'Producto eliminado correctamente');
     } catch (error) {
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        status: false,
-        message: `Error al eliminar el producto: ${error}`,
-        response: null,
-      });
+      return this.handleErrorResponse(res, error, 'eliminar el producto');
     }
-
-
   }
 }
