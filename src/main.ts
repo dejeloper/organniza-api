@@ -2,16 +2,14 @@ import {NestFactory} from '@nestjs/core';
 import {ExpressAdapter} from '@nestjs/platform-express';
 import {AppModule} from './app.module';
 import {DocumentBuilder, SwaggerModule} from '@nestjs/swagger';
-import express, {Express} from 'express'; // ✅ Importación correcta
-
-const server: Express = express(); // ✅ Definir correctamente el servidor Express
+import express, {Express} from 'express';
+const server: Express = express();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
   app.enableCors();
   app.setGlobalPrefix('api');
 
-  // Configuración de Swagger
   const config = new DocumentBuilder()
     .setTitle('Organniza API')
     .setDescription('API para el proyecto Organniza')
@@ -31,7 +29,7 @@ async function bootstrap() {
 }
 
 if (!process.env.VERCEL) {
-  bootstrap(); // Solo ejecuta en local
+  bootstrap();
 }
 
-export default server; // ✅ Exportar correctamente para Vercel
+export default server;  
