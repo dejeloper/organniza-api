@@ -1,4 +1,4 @@
-import {Injectable, NotFoundException, BadRequestException, InternalServerErrorException} from '@nestjs/common';
+import {Injectable, NotFoundException, InternalServerErrorException} from '@nestjs/common';
 import {CreateProductDto} from './dto/create-product.dto';
 import {UpdateProductDto} from './dto/update-product.dto';
 import {PrismaService} from 'src/prisma/prisma.service';
@@ -21,6 +21,12 @@ export class ProductsService {
       return await this.prismaService.product.findMany({
         where: {enabled: true},
         orderBy: {id: 'asc'},
+        include: {
+          unit: true,
+          category: true,
+          place: true,
+          status: true,
+        },
       });
     } catch (error) {
       throw new InternalServerErrorException(`Error al obtener los productos: ${error.message}`);
@@ -29,8 +35,14 @@ export class ProductsService {
 
   async findOne(id: number): Promise<Product> {
     try {
-      const product = await this.prismaService.product.findUnique({
+      const product = await this.prismaService.product.findFirst({
         where: {id, enabled: true},
+        include: {
+          unit: true,
+          category: true,
+          place: true,
+          status: true,
+        },
       });
       if (!product) {
         throw new NotFoundException(`No se encontró producto con id ${id}`);
