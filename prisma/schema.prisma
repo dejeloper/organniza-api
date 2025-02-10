@@ -13,12 +13,131 @@ datasource db {
 }
 
 model Product {
-  id            Int      @id @default(autoincrement())
-  name          String
-  price         Float
-  category      String
-  clasification String
-  enabled       Boolean  @default(true)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  unitId      Int
+  price       Float
+  categoryId  Int
+  placeId     Int
+  statusId    Int
+  observation String?
+  image       String?
+  enabled     Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  unit     Units         @relation(fields: [unitId], references: [id])
+  category Categories    @relation(fields: [categoryId], references: [id])
+  place    Places        @relation(fields: [placeId], references: [id])
+  status   StatusProduct @relation(fields: [statusId], references: [id])
+
+  checklistDetails ChecklistDetail[]
+  purchaseDetails  PurchasesHistoryDetail[]
+}
+
+model Units {
+  id        Int      @id @default(autoincrement())
+  name      String
+  nemonico  String
+  enabled   Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Product                Product[]
+  PurchasesHistoryDetail PurchasesHistoryDetail[]
+  ChecklistPantryUnits   ChecklistDetail[]        @relation("PantryUnit")
+  ChecklistRequiredUnits ChecklistDetail[]        @relation("RequiredUnit")
+}
+
+model Categories {
+  id        Int      @id @default(autoincrement())
+  name      String
+  icon      String
+  color     String
+  enabled   Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Product Product[]
+}
+
+model Places {
+  id        Int      @id @default(autoincrement())
+  name      String
+  shortName String
+  color     String
+  enabled   Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Product Product[]
+}
+
+model StatusProduct {
+  id        Int      @id @default(autoincrement())
+  name      String
+  enabled   Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Product Product[]
+}
+
+model PurchasesHistoryHeader {
+  id             Int      @id @default(autoincrement())
+  year           Int
+  month          Int
+  amountPurchase Int
+  totalPurchase  Float
+  enabled        Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  PurchasesHistoryDetail PurchasesHistoryDetail[]
+}
+
+model PurchasesHistoryDetail {
+  id                       Int      @id @default(autoincrement())
+  purchasesHistoryHeaderId Int
+  productId                Int
+  amountProduct            Int      @default(1)
+  unitProduct              Int
+  subTotalProduct          Float
+  enabled                  Boolean  @default(true)
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  Product                Product                @relation(fields: [productId], references: [id])
+  Unit                   Units                  @relation(fields: [unitProduct], references: [id])
+  PurchasesHistoryHeader PurchasesHistoryHeader @relation(fields: [purchasesHistoryHeaderId], references: [id])
+}
+
+model ChecklistHeader {
+  id        Int      @id @default(autoincrement())
+  year      Int
+  month     Int
+  enabled   Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  ChecklistDetail ChecklistDetail[]
+}
+
+model ChecklistDetail {
+  id                    Int      @id @default(autoincrement())
+  checklistHeaderId     Int
+  productId             Int
+  pantryAmountProduct   Int
+  pantryUnitProduct     Int
+  requiredAmountProduct Int
+  requiredUnitProduct   Int
+  enabled               Boolean  @default(true)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  Product         Product         @relation(fields: [productId], references: [id])
+  PantryUnit      Units           @relation(fields: [pantryUnitProduct], references: [id], name: "PantryUnit")
+  RequiredUnit    Units           @relation(fields: [requiredUnitProduct], references: [id], name: "RequiredUnit")
+  ChecklistHeader ChecklistHeader @relation(fields: [checklistHeaderId], references: [id])
 }
