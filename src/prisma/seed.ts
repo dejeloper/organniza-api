@@ -5,8 +5,8 @@ const prisma = new PrismaClient();
 async function main() {
 	console.log('🌱 Iniciando seed...');
 
-	// Seed de Units
-	await prisma.units.createMany({
+	// Seed de Unit
+	await prisma.unit.createMany({
 		data: [
 			{name: 'Kilogramo', nemonico: 'kg'},
 			{name: 'Litro', nemonico: 'L'},
@@ -15,8 +15,8 @@ async function main() {
 	});
 	console.log('✅ Se insertaron unidades');
 
-	// Seed de Categories
-	await prisma.categories.createMany({
+	// Seed de Category
+	await prisma.category.createMany({
 		data: [
 			{name: 'Frutas', icon: '🍎', color: '#FF5733'},
 			{name: 'Verduras', icon: '🥦', color: '#4CAF50'},
@@ -25,8 +25,8 @@ async function main() {
 	});
 	console.log('✅ Se insertaron categorías');
 
-	// Seed de Places (Lugares de compra)
-	await prisma.places.createMany({
+	// Seed de Place (Lugares de compra)
+	await prisma.place.createMany({
 		data: [
 			{name: 'Supermercado Zapatoca', shortName: 'SZ', color: '#FFC107'},
 			{name: 'Supermercado D1', shortName: 'D1', color: '#8BC34A'},
@@ -38,8 +38,8 @@ async function main() {
 	});
 	console.log('✅ Se insertaron lugares de compra');
 
-	// Seed de StatusProduct
-	await prisma.statusProduct.createMany({
+	// Seed de ProductStatus
+	await prisma.productStatus.createMany({
 		data: [
 			{name: 'Disponible'},
 			{name: 'Agotado'},
