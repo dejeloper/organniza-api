@@ -7,8 +7,8 @@
   "license": "UNLICENSED",
   "scripts": {
     "postinstall": "prisma generate",
-    "build": "npx prisma generate && npx prisma migrate deploy && npx ts-node ./src/prisma/seed.ts && nest build",
-    "vercel-build": "npx prisma generate && npx prisma migrate deploy && npx ts-node --transpile-only ./src/prisma/seed.ts && nest build",
+    "build": "prisma generate && prisma migrate deploy && ts-node ./src/prisma/seed.ts && nest build",
+    "vercel-build": "prisma generate && prisma migrate deploy && ts-node --transpile-only ./src/prisma/seed.ts && nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
