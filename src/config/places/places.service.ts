@@ -2,7 +2,7 @@ import {Injectable, InternalServerErrorException, NotFoundException} from '@nest
 import {CreatePlaceDto} from './dto/create-place.dto';
 import {UpdatePlaceDto} from './dto/update-place.dto';
 import {PrismaService} from '@/prisma/prisma.service';
-import {Place} from '@prisma/client';
+import {Place} from '@/prisma';
 
 @Injectable()
 export class PlacesService {
