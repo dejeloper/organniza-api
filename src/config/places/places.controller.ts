@@ -5,7 +5,7 @@ import {UpdatePlaceDto} from './dto/update-place.dto';
 import {ApiOperation, ApiResponse, ApiTags} from '@nestjs/swagger';
 
 @ApiTags('Lugares')
-@Controller('places')
+@Controller('config/places')
 export class PlacesController {
   constructor(private readonly placesService: PlacesService) { }
 
