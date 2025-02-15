@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -12,26 +9,24 @@ datasource db {
 }
 
 model Product {
-  id          Int      @id @default(autoincrement())
-  name        String
-  description String
-  unitId      Int
-  price       Float
-  categoryId  Int
-  placeId     Int
-  statusId    Int
-  observation String?
-  image       String?
-  enabled     Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  unit     Unit          @relation(fields: [unitId], references: [id], onDelete: Cascade)
-  category Category      @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  place    Place         @relation(fields: [placeId], references: [id], onDelete: Cascade)
-  status   ProductStatus @relation(fields: [statusId], references: [id], onDelete: Cascade)
-
+  id               Int                      @id @default(autoincrement())
+  name             String
+  description      String
+  unitId           Int
+  price            Float
+  categoryId       Int
+  placeId          Int
+  statusId         Int
+  observation      String?
+  image            String?
+  enabled          Boolean                  @default(true)
+  createdAt        DateTime                 @default(now())
+  updatedAt        DateTime                 @updatedAt
   checklistDetails ChecklistDetail[]
+  category         Category                 @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  place            Place                    @relation(fields: [placeId], references: [id], onDelete: Cascade)
+  status           ProductStatus            @relation(fields: [statusId], references: [id], onDelete: Cascade)
+  unit             Unit                     @relation(fields: [unitId], references: [id], onDelete: Cascade)
   purchaseDetails  PurchasesHistoryDetail[]
 
   @@index([name])
@@ -40,71 +35,66 @@ model Product {
 }
 
 model Unit {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
-  nemonico  String
-  enabled   Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  products               Product[]
-  purchasesHistoryDetail PurchasesHistoryDetail[]
+  id                     Int                      @id @default(autoincrement())
+  name                   String                   @unique
+  nemonico               String
+  enabled                Boolean                  @default(true)
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime                 @updatedAt
   checklistPantryUnits   ChecklistDetail[]        @relation("PantryUnit")
   checklistRequiredUnits ChecklistDetail[]        @relation("RequiredUnit")
+  products               Product[]
+  purchasesHistoryDetail PurchasesHistoryDetail[]
 
   @@index([name])
 }
 
 model Category {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
   icon      String
   color     String
-  enabled   Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  products Product[]
+  enabled   Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  products  Product[]
 
   @@index([name])
 }
 
 model Place {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
   shortName String
   color     String
-  enabled   Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  products Product[]
+  enabled   Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  products  Product[]
 
   @@index([name])
 }
 
 model ProductStatus {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
-  enabled   Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  products Product[]
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  enabled   Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  products  Product[]
 
   @@index([name])
 }
 
 model PurchasesHistoryHeader {
-  id             Int      @id @default(autoincrement())
-  year           Int
-  month          Int
-  amountPurchase Int
-  totalPurchase  Float
-  enabled        Boolean  @default(true)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
+  id                     Int                      @id @default(autoincrement())
+  year                   Int
+  month                  Int
+  amountPurchase         Int
+  totalPurchase          Float
+  enabled                Boolean                  @default(true)
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime                 @updatedAt
   purchasesHistoryDetail PurchasesHistoryDetail[]
 
   @@index([year])
@@ -114,32 +104,30 @@ model PurchasesHistoryHeader {
 }
 
 model PurchasesHistoryDetail {
-  id                       Int      @id @default(autoincrement())
+  id                       Int                    @id @default(autoincrement())
   purchasesHistoryHeaderId Int
   productId                Int
-  amountProduct            Int      @default(1)
+  amountProduct            Int                    @default(1)
   unitProduct              Int
   subTotalProduct          Float
-  enabled                  Boolean  @default(true)
-  createdAt                DateTime @default(now())
-  updatedAt                DateTime @updatedAt
-
-  product                Product                @relation(fields: [productId], references: [id], onDelete: Cascade)
-  unit                   Unit                   @relation(fields: [unitProduct], references: [id], onDelete: Cascade)
-  purchasesHistoryHeader PurchasesHistoryHeader @relation(fields: [purchasesHistoryHeaderId], references: [id], onDelete: Cascade)
+  enabled                  Boolean                @default(true)
+  createdAt                DateTime               @default(now())
+  updatedAt                DateTime               @updatedAt
+  product                  Product                @relation(fields: [productId], references: [id], onDelete: Cascade)
+  purchasesHistoryHeader   PurchasesHistoryHeader @relation(fields: [purchasesHistoryHeaderId], references: [id], onDelete: Cascade)
+  unit                     Unit                   @relation(fields: [unitProduct], references: [id], onDelete: Cascade)
 
   @@index([createdAt])
   @@index([subTotalProduct])
 }
 
 model ChecklistHeader {
-  id        Int      @id @default(autoincrement())
-  year      Int
-  month     Int
-  enabled   Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
+  id               Int               @id @default(autoincrement())
+  year             Int
+  month            Int
+  enabled          Boolean           @default(true)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
   checklistDetails ChecklistDetail[]
 
   @@index([year])
@@ -148,21 +136,20 @@ model ChecklistHeader {
 }
 
 model ChecklistDetail {
-  id                    Int      @id @default(autoincrement())
+  id                    Int             @id @default(autoincrement())
   checklistHeaderId     Int
   productId             Int
   pantryAmountProduct   Int
   pantryUnitProduct     Int
   requiredAmountProduct Int
   requiredUnitProduct   Int
-  enabled               Boolean  @default(true)
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
-
-  product         Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
-  pantryUnit      Unit            @relation(fields: [pantryUnitProduct], references: [id], onDelete: Cascade, name: "PantryUnit")
-  requiredUnit    Unit            @relation(fields: [requiredUnitProduct], references: [id], onDelete: Cascade, name: "RequiredUnit")
-  checklistHeader ChecklistHeader @relation(fields: [checklistHeaderId], references: [id], onDelete: Cascade)
+  enabled               Boolean         @default(true)
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+  checklistHeader       ChecklistHeader @relation(fields: [checklistHeaderId], references: [id], onDelete: Cascade)
+  pantryUnit            Unit            @relation("PantryUnit", fields: [pantryUnitProduct], references: [id], onDelete: Cascade)
+  product               Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  requiredUnit          Unit            @relation("RequiredUnit", fields: [requiredUnitProduct], references: [id], onDelete: Cascade)
 
   @@index([createdAt])
 }
